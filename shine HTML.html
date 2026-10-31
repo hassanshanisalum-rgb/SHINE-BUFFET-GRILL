@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🍽️%3C/text%3E%3C/svg%3E">
+    <script>try{if(localStorage.getItem("shineTheme")==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}</script>
+    <title>Shine Buffet & Grills - Interactive Menu & Order Tray</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#E6CA65',
+                            500: '#D4AF37',
+                            600: '#AA8828',
+                        },
+                        darkslate: '#12191d',
+                        charcoal: '#1e282f',
+                        burgundy: '#8B0000',
+                        borderdark: '#2d3a43'
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #12191d;
+        }
+        /* Custom dot connectors for menu prices */
+        .dots-connector {
+            background-image: radial-gradient(circle, #3a4b56 1.5px, transparent 1.5px);
+            background-size: 10px 10px;
+            background-repeat: repeat-x;
+            background-position: bottom;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #12191d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d3a43;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+        /* Hide scrollbar for category scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Inline icons */
+        i.fa-solid, i.fa-brands { display:inline-block; width:1em; height:1em; vertical-align:-0.125em; background-color:currentColor; -webkit-mask:var(--ic) center/contain no-repeat; mask:var(--ic) center/contain no-repeat; }
+        i.fa-utensils { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M3%202v7c0%201.1.9%202%202%202h4a2%202%200%200%200%202-2V2'/%3E%3Cpath%20d='M7%202v20'/%3E%3Cpath%20d='M21%2015V2a5%205%200%200%200-5%205v6c0%201.1.9%202%202%202h3Zm0%200v7'/%3E%3C/svg%3E"); }
+        i.fa-plus { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%205v14M5%2012h14'/%3E%3C/svg%3E"); }
+        i.fa-minus { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5%2012h14'/%3E%3C/svg%3E"); }
+        i.fa-xmark { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%206l12%2012M18%206L6%2018'/%3E%3C/svg%3E"); }
+        i.fa-arrow-right { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5%2012h14M13%206l6%206-6%206'/%3E%3C/svg%3E"); }
+        i.fa-phone { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M22%2016.92v3a2%202%200%200%201-2.18%202%2019.79%2019.79%200%200%201-8.63-3.07%2019.5%2019.5%200%200%201-6-6%2019.79%2019.79%200%200%201-3.07-8.67A2%202%200%200%201%204.11%202h3a2%202%200%200%201%202%201.72c.127.96.361%201.903.7%202.81a2%202%200%200%201-.45%202.11L8.09%209.91a16%2016%200%200%200%206%206l1.27-1.27a2%202%200%200%201%202.11-.45c.907.339%201.85.573%202.81.7A2%202%200%200%201%2022%2016.92z'/%3E%3C/svg%3E"); }
+        i.fa-location-dot { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M20%2010c0%206-8%2012-8%2012s-8-6-8-12a8%208%200%200%201%2016%200z'/%3E%3Ccircle%20cx='12'%20cy='10'%20r='3'/%3E%3C/svg%3E"); }
+        i.fa-cart-shopping { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='8'%20cy='21'%20r='1'/%3E%3Ccircle%20cx='19'%20cy='21'%20r='1'/%3E%3Cpath%20d='M2.05%202.05h2l2.66%2012.42a2%202%200%200%200%202%201.58h9.78a2%202%200%200%200%201.95-1.57l1.65-7.43H5.12'/%3E%3C/svg%3E"); }
+        i.fa-magnifying-glass { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='11'%20cy='11'%20r='8'/%3E%3Cpath%20d='m21%2021-4.3-4.3'/%3E%3C/svg%3E"); }
+        i.fa-basket-shopping { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='m15%2011-1%209'/%3E%3Cpath%20d='m19%2011-4-7'/%3E%3Cpath%20d='M2%2011h20'/%3E%3Cpath%20d='m3.5%2011%201.6%207.4a2%202%200%200%200%202%201.6h9.8a2%202%200%200%200%202-1.6l1.7-7.4'/%3E%3Cpath%20d='m5%2011%204-7'/%3E%3Cpath%20d='m9%2011%201%209'/%3E%3C/svg%3E"); }
+        i.fa-receipt { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M4%202v20l2-1%202%201%202-1%202%201%202-1%202%201%202-1%202%201V2l-2%201-2-1-2%201-2-1-2%201-2-1-2%201Z'/%3E%3Cpath%20d='M16%208h-6a2%202%200%201%200%200%204h4a2%202%200%201%201%200%204H8'/%3E%3Cpath%20d='M12%2017.5v-11'/%3E%3C/svg%3E"); }
+        i.fa-whatsapp { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M7.9%2020A9%209%200%201%200%204%2016.1L2%2022Z'/%3E%3C/svg%3E"); }
+
+        i.fa-sun { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='12'%20cy='12'%20r='4'/%3E%3Cpath%20d='M12%202v2M12%2020v2M4.93%204.93l1.41%201.41M17.66%2017.66l1.41%201.41M2%2012h2M20%2012h2M6.34%2017.66l-1.41%201.41M19.07%204.93l-1.41%201.41'/%3E%3C/svg%3E"); }
+        i.fa-moon { --ic:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M21%2012.79A9%209%200%201%201%2011.21%203%207%207%200%200%200%2021%2012.79z'/%3E%3C/svg%3E"); }
+
+        /* Light theme */
+        html[data-theme="light"] body, html[data-theme="light"] .bg-darkslate { background-color:#faf7f2; }
+        html[data-theme="light"] .bg-darkslate\/95 { background-color:rgba(250,247,242,.95); }
+        html[data-theme="light"] .bg-darkslate\/70 { background-color:rgba(250,247,242,.75); }
+        html[data-theme="light"] .bg-charcoal { background-color:#ffffff; }
+        html[data-theme="light"] .border-borderdark, html[data-theme="light"] .border-borderdark\/50 { border-color:#e3dccf; }
+        html[data-theme="light"] .text-white, html[data-theme="light"] .hover\:text-white:hover { color:#1f2328; }
+        html[data-theme="light"] .text-gray-200 { color:#2b3138; }
+        html[data-theme="light"] .text-gray-300 { color:#3d454d; }
+        html[data-theme="light"] .text-gray-400 { color:#59626b; }
+        html[data-theme="light"] .text-gray-500 { color:#6b747d; }
+        html[data-theme="light"] .text-gray-600 { color:#9aa3ab; }
+        html[data-theme="light"] .text-gold-500, html[data-theme="light"] .text-gold-400 { color:#8a6a12; }
+        html[data-theme="light"] .bg-burgundy.text-gold-500, html[data-theme="light"] .bg-burgundy.text-gold-400 { color:#E6CA65; }
+        html[data-theme="light"] .bg-burgundy.text-white, html[data-theme="light"] .bg-emerald-600.text-white { color:#ffffff; }
+        html[data-theme="light"] .text-red-400 { color:#c0392b; }
+        html[data-theme="light"] .bg-burgundy\/40 { background-color:rgba(139,0,0,.12); }
+        html[data-theme="light"] input::placeholder, html[data-theme="light"] textarea::placeholder { color:#8a929a; }
+        html[data-theme="light"] .from-charcoal { --tw-gradient-from:#ffffff !important; --tw-gradient-to:rgb(255 255 255 / 0) !important; }
+        html[data-theme="light"] .via-charcoal\/60 { --tw-gradient-stops:#ffffff, rgb(255 255 255 / .6), rgb(255 255 255 / 0) !important; }
+        html[data-theme="light"] .dots-connector { background-image:radial-gradient(circle,#cfc6b4 1.5px,transparent 1.5px); }
+        html[data-theme="light"] ::-webkit-scrollbar-track { background:#faf7f2; }
+        html[data-theme="light"] ::-webkit-scrollbar-thumb { background:#d8cfbd; }
+    </style>
+</head>
+<body class="bg-darkslate text-gray-200 font-sans antialiased min-h-screen flex flex-col relative pb-20">
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-30 bg-darkslate/95 backdrop-blur-md border-b border-borderdark shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                
+                <!-- Brand Title -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-gold-600 via-gold-500 to-amber-200 p-0.5 flex items-center justify-center shadow-lg shadow-gold-500/20">
+                            <div class="w-full h-full bg-darkslate rounded-full flex items-center justify-center">
+                                <i class="fa-solid font-bold text-gold-500 text-lg fa-utensils"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h1 class="text-xl sm:text-2xl font-bold font-serif text-white tracking-wide flex items-center gap-2">
+                                SHINE <span class="text-gold-500 font-sans text-xs tracking-widest px-2 py-0.5 border border-gold-500/30 rounded bg-burgundy/40">BUFFET & GRILLS</span>
+                            </h1>
+                            <p class="text-xs text-gray-400 flex items-center gap-2 mt-0.5">
+                                <span><i class="fa-solid fa-location-dot text-gold-500"></i> Mwai Kibaki Road, Dar Es Salaam</span>
+                                <span class="hidden sm:inline">•</span>
+                                <a href="tel:0712380395" class="hidden sm:inline hover:text-gold-500 text-gold-400"><i class="fa-solid fa-phone"></i> 0712380395</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Cart Trigger on Mobile Header -->
+                    <button onclick="toggleCartDrawer()" class="md:hidden relative p-2.5 bg-charcoal border border-borderdark rounded-xl text-gold-500 hover:border-gold-500/50">
+                        <i class="fa-solid fa-cart-shopping text-lg"></i>
+                        <span id="cartBadgeMobile" class="absolute -top-1.5 -right-1.5 bg-burgundy text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-gold-500">0</span>
+                    </button>
+                </div>
+
+                <!-- Search Input & Header Actions -->
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-80">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="searchInput" placeholder="Search menu (Pizza, Juice, Samaki)..." 
+                            class="w-full pl-10 pr-4 py-2 bg-charcoal border border-borderdark rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gold-500 transition-colors">
+                    </div>
+                    
+                    <button type="button" id="themeToggle" onclick="toggleTheme()" aria-label="Switch between dark and light theme" class="flex items-center gap-2 px-3 py-2 bg-charcoal border border-borderdark rounded-xl text-xs font-bold text-gray-300 hover:border-gold-500/50 whitespace-nowrap">
+                        <i id="themeIcon" class="fa-solid fa-sun"></i><span id="themeLabel">Light</span>
+                    </button>
+                    <button onclick="toggleCartDrawer()" class="hidden md:flex items-center gap-2 px-4 py-2 bg-charcoal border border-borderdark hover:border-gold-500 rounded-xl text-gold-500 hover:text-gold-400 transition-all font-semibold text-sm">
+                        <i class="fa-solid fa-basket-shopping text-base"></i>
+                        <span>Order Tray</span>
+                        <span id="cartBadgeHeader" class="bg-burgundy text-white text-xs font-bold px-2 py-0.5 rounded-full border border-gold-500/40">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Menu Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+        <div class="flex flex-row-reverse items-start gap-3 sm:gap-6">
+            <div class="flex-1 min-w-0">
+                <div id="noResults" class="hidden text-center py-16 text-gray-400 space-y-3">
+                    <i class="fa-solid fa-utensils text-4xl text-gray-600"></i>
+                    <p class="text-lg">No menu items found matching your search query.</p>
+                    <button onclick="resetSearch()" class="px-4 py-2 bg-gold-500 text-darkslate font-semibold rounded-lg text-sm hover:bg-gold-400">Clear Search Filter</button>
+                </div>
+
+                <!-- Dynamic Category Sections Container -->
+                <div id="menuContainer" class="space-y-10"></div>
+            </div>
+
+            <!-- Category sidebar -->
+            <nav id="categoryChips" aria-label="Menu categories" class="sticky shrink-0 w-28 sm:w-44 flex flex-col gap-2 overflow-y-auto no-scrollbar pb-2" style="top:140px;max-height:calc(100vh - 160px)"></nav>
+        </div>
+    </main>
+
+    <!-- Floating Cart Bar at Bottom -->
+    <div id="floatingCartBar" class="fixed bottom-4 left-4 right-4 max-w-xl mx-auto bg-charcoal border border-gold-500/50 rounded-2xl shadow-2xl p-3.5 z-30 flex items-center justify-between backdrop-blur-lg transform transition-all duration-300 translate-y-28 opacity-0">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-burgundy flex items-center justify-center text-gold-500 text-lg border border-gold-500/30">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400"><span id="floatingCartCount" class="font-bold text-white">0</span> items selected</p>
+                <p class="text-sm font-bold text-gold-500 font-mono" id="floatingCartTotal">TZS 0</p>
+            </div>
+        </div>
+        <button onclick="openCartDrawer()" class="px-5 py-2.5 bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-darkslate font-bold text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-lg transition-all flex items-center gap-2">
+            <span>View Tray</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Order Tray / Cart Drawer Backdrop -->
+    <div id="cartBackdrop" onclick="closeCartDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+    <!-- Slide-out Order Tray Drawer -->
+    <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-charcoal border-l border-borderdark z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
+        <div class="p-4 sm:p-5 border-b border-borderdark flex items-center justify-between bg-darkslate">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-receipt text-gold-500 text-xl"></i>
+                <h2 class="text-lg font-serif font-bold text-white">Your Order Tray</h2>
+            </div>
+            <button onclick="closeCartDrawer()" class="w-8 h-8 rounded-lg bg-charcoal text-gray-400 hover:text-white flex items-center justify-center border border-borderdark">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4" id="cartItemsContainer">
+            <div id="emptyCartState" class="text-center py-16 space-y-3">
+                <i class="fa-solid fa-basket-shopping text-5xl text-gray-600"></i>
+                <p class="text-base text-gray-400">Your order tray is currently empty.</p>
+                <p class="text-xs text-gray-500">Tap the (+) button on any dish to add items to your tray.</p>
+            </div>
+        </div>
+
+        <div class="p-4 sm:p-5 border-t border-borderdark bg-darkslate space-y-4">
+            <div class="space-y-3">
+                <fieldset class="space-y-1.5">
+                    <legend class="block text-xs font-semibold text-gray-300 mb-1.5">Order type:</legend>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer"><input type="radio" name="orderType" value="Pick up" class="peer sr-only" checked><span class="block text-center px-3 py-2 rounded-xl text-xs font-bold border border-borderdark bg-charcoal text-gray-300 peer-checked:bg-burgundy peer-checked:text-gold-500 peer-checked:border-gold-500">Pick up</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="orderType" value="Delivery" class="peer sr-only"><span class="block text-center px-3 py-2 rounded-xl text-xs font-bold border border-borderdark bg-charcoal text-gray-300 peer-checked:bg-burgundy peer-checked:text-gold-500 peer-checked:border-gold-500">Delivery</span></label>
+                    </div>
+                </fieldset>
+                <fieldset class="space-y-1.5">
+                    <legend class="block text-xs font-semibold text-gray-300 mb-1.5">Payment method:</legend>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer"><input type="radio" name="payMethod" value="Cash" class="peer sr-only" checked><span class="block text-center px-2 py-2 rounded-xl text-xs font-bold border border-borderdark bg-charcoal text-gray-300 peer-checked:bg-burgundy peer-checked:text-gold-500 peer-checked:border-gold-500">Cash</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="payMethod" value="Mobile money" class="peer sr-only"><span class="block text-center px-2 py-2 rounded-xl text-xs font-bold border border-borderdark bg-charcoal text-gray-300 peer-checked:bg-burgundy peer-checked:text-gold-500 peer-checked:border-gold-500">Mobile money</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="payMethod" value="Card" class="peer sr-only"><span class="block text-center px-2 py-2 rounded-xl text-xs font-bold border border-borderdark bg-charcoal text-gray-300 peer-checked:bg-burgundy peer-checked:text-gold-500 peer-checked:border-gold-500">Card</span></label>
+                    </div>
+                </fieldset>
+                <fieldset id="walletBox" class="hidden space-y-2.5 rounded-xl border border-gold-500/40 bg-charcoal p-3">
+                    <legend class="px-1 text-xs font-semibold text-gold-500">Mobile money payment</legend>
+                    <p class="text-xs text-gray-300">Pay the full Total Order Amount to <span class="font-mono font-bold text-gold-500">0682002546</span>, then fill in the details below.</p>
+                    <div class="space-y-1">
+                        <label for="mmNetwork" class="block text-xs font-semibold text-gray-300">Network <span class="text-red-400">*</span></label>
+                        <select id="mmNetwork" class="w-full px-3 py-2 bg-darkslate border border-borderdark rounded-xl text-xs text-white focus:outline-none focus:border-gold-500">
+                            <option value="">Select network...</option>
+                            <option>M-Pesa</option>
+                            <option>Tigo Pesa</option>
+                            <option>Airtel Money</option>
+                            <option>HaloPesa</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label for="mmSender" class="block text-xs font-semibold text-gray-300">Sender name (name used to pay) <span class="text-red-400">*</span></label>
+                        <input type="text" id="mmSender" autocomplete="name" placeholder="e.g. Juma Hassan" class="w-full px-3 py-2 bg-darkslate border border-borderdark rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500">
+                    </div>
+                    <label class="flex items-start gap-2 text-xs text-gray-300 cursor-pointer">
+                        <input type="checkbox" id="mmPaid" class="mt-0.5 accent-yellow-600">
+                        <span>I have paid the full Total Order Amount to <span class="font-mono font-bold text-gold-500">0682002546</span></span>
+                    </label>
+                    <p id="mmHint" class="text-[11px] text-red-400 hidden">Complete the network, sender name and payment tick box to send your order.</p>
+                </fieldset>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-semibold text-gray-300">Delivery address / Special request:</label>
+                <textarea id="orderNotes" rows="2" placeholder="e.g. Table #4 or Delivery to Mwai Kibaki Rd, extra spicy..." 
+                    class="w-full px-3 py-2 bg-charcoal border border-borderdark rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500 transition-colors"></textarea>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-borderdark/50 text-xs text-gray-300">
+                <div class="flex justify-between">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal" class="font-mono text-white">TZS 0</span>
+                </div>
+                <div class="flex justify-between font-bold text-sm text-white pt-1">
+                    <span class="text-gold-500">Total Order Amount</span>
+                    <span id="cartTotal" class="font-mono text-gold-500">TZS 0</span>
+                </div>
+            </div>
+
+            <button onclick="sendOrderViaWhatsApp()" id="whatsappBtn" disabled class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>Send Order via WhatsApp</span>
+            </button>
+            <p class="text-[11px] text-center text-gray-500">
+                Direct WhatsApp Order line: <a href="https://wa.me/255675921219" target="_blank" class="text-gold-500 hover:underline">0675921219</a>
+            </p>
+        </div>
+    </aside>
+
+    <!-- Footer -->
+    <footer class="bg-charcoal border-t border-borderdark mt-12 py-8 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-3">
+            <p class="font-serif text-sm text-gold-500">Shine Buffet & Grills • Mwai Kibaki Road, Dar Es Salaam</p>
+            <p class="text-gray-400"><i class="fa-solid fa-phone text-gold-500 mr-1"></i> Call: <a href="tel:0712380395" class="hover:text-gold-500 underline font-semibold">0712380395</a> | WhatsApp Orders: <a href="https://wa.me/255675921219" target="_blank" class="hover:text-emerald-400 text-emerald-500 underline font-semibold">0675921219</a></p>
+            <p>All prices listed are in Tanzanian Shillings (TZS).</p>
+            <p class="text-gray-600">© 2026 Shine Buffet & Grills. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const WHATSAPP_NUMBER = "255675921219";
+
+        // Map of High Quality Actual Photos as Header Banners for Each Food Category matching the requested style
+        const categoryHeaderImages = {
+            "BREAKFAST": "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=1200&q=80",
+            "BURGER": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80",
+            "CHINESE": "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1200&q=80",
+            "COOLS": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=1200&q=80",
+            "FRESH JUICE": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=1200&q=80",
+            "INDIAN DISHES": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=1200&q=80",
+            "MILK SHAKE": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=1200&q=80",
+            "OMELETS": "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=1200&q=80",
+            "OTHER": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
+            "OUR FOOD SAVED WITH": "https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=1200&q=80",
+            "OUR SPECIAL": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80",
+            "PASTA": "https://images.unsplash.com/photo-1621996346565-e3d5d6281293?auto=format&fit=crop&w=1200&q=80",
+            "PIZZA": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+            "RICE": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=1200&q=80",
+            "SALAD": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+            "SANDWICH": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=1200&q=80",
+            "SEA FOOD": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=1200&q=80",
+            "SIZZLE": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
+            "SMOOTH JUICE": "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=1200&q=80",
+            "SOUPS": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80",
+            "STATERS": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=1200&q=80",
+            "STEAK": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
+            "SWAHILI": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=1200&q=80",
+            "WRAP": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=80"
+        };
+
+        const categoriesList = ["ALL", "BREAKFAST", "BURGER", "CHINESE", "COOLS", "FRESH JUICE", "INDIAN DISHES", "MILK SHAKE", "OMELETS", "OTHER", "OUR FOOD SAVED WITH", "OUR SPECIAL", "PASTA", "PIZZA", "RICE", "SALAD", "SANDWICH", "SEA FOOD", "SIZZLE", "SMOOTH JUICE", "SOUPS", "STATERS", "STEAK", "SWAHILI", "WRAP"];
+
+        const menuData = [
+    {
+        "category": "BREAKFAST",
+        "items": [
+            { "id": "m23", "name": "Bagia nailon", "price": 3000, "desc": "" },
+            { "id": "m212", "name": "Black masala tea", "price": 2500, "desc": "" },
+            { "id": "m232", "name": "Black tea", "price": 1500, "desc": "" },
+            { "id": "m220", "name": "Boiled eggs", "price": 2000, "desc": "" },
+            { "id": "m231", "name": "Chai dawa", "price": 5000, "desc": "" },
+            { "id": "m218", "name": "Chapati", "price": 2000, "desc": "" },
+            { "id": "m2", "name": "Cuppcino", "price": 7000, "desc": "" },
+            { "id": "m227", "name": "Eggchop", "price": 5000, "desc": "" },
+            { "id": "m16", "name": "Hot coffee", "price": 5000, "desc": "" },
+            { "id": "m214", "name": "Kababu", "price": 2000, "desc": "" },
+            { "id": "m22", "name": "Kachori portion", "price": 3000, "desc": "" },
+            { "id": "m226", "name": "Katles", "price": 2000, "desc": "" },
+            { "id": "m18", "name": "Lemon tea", "price": 4000, "desc": "" },
+            { "id": "m221", "name": "Maandazi", "price": 2000, "desc": "" },
+            { "id": "m224", "name": "Magimbi", "price": 2000, "desc": "" },
+            { "id": "m230", "name": "Masala tea", "price": 5000, "desc": "" },
+            { "id": "m21", "name": "Mihogo", "price": 2000, "desc": "" },
+            { "id": "m213", "name": "Milk Tea Masala", "price": 5000, "desc": "" },
+            { "id": "m211", "name": "Mint tea", "price": 3000, "desc": "" },
+            { "id": "m222", "name": "Ndizi", "price": 10000, "desc": "" },
+            { "id": "m219", "name": "Omlette", "price": 5000, "desc": "" },
+            { "id": "m225", "name": "Pancake", "price": 2000, "desc": "" },
+            { "id": "m233", "name": "Sambusa", "price": 2000, "desc": "" },
+            { "id": "m240", "name": "Sausage", "price": 2000, "desc": "" },
+            { "id": "m17", "name": "Soup ya kondoo", "price": 25000, "desc": "" },
+            { "id": "m241", "name": "Spanish omlette", "price": 5000, "desc": "" },
+            { "id": "m19", "name": "Springles portion", "price": 12000, "desc": "" },
+            { "id": "m10", "name": "Stir-fry veggies", "price": 4000, "desc": "" },
+            { "id": "m20", "name": "Supu ya changu", "price": 17000, "desc": "" },
+            { "id": "m215", "name": "Supu ya kuku", "price": 25000, "desc": "" },
+            { "id": "m65", "name": "Supu ya mbuzi", "price": 25000, "desc": "" },
+            { "id": "m216", "name": "Supu ya nyama", "price": 15000, "desc": "" },
+            { "id": "m217", "name": "Supu ya samaki", "price": 25000, "desc": "" },
+            { "id": "m229", "name": "Tambi", "price": 5000, "desc": "" },
+            { "id": "m228", "name": "Toast bread", "price": 3000, "desc": "" },
+            { "id": "m223", "name": "Viazi", "price": 2000, "desc": "" }
+        ]
+    },
+    {
+        "category": "BURGER",
+        "items": [
+            { "id": "m210", "name": "Beef Burger", "price": 12000, "desc": "Classic beef patty with fresh tomato, lettuce, and house sauce." },
+            { "id": "m209", "name": "Chicken Burger", "price": 12000, "desc": "Juicy chicken patty topped with fresh lettuce & spicy mayonnaise." },
+            { "id": "m6", "name": "Extra Cheese", "price": 3000, "desc": "Add extra melted cheddar cheese slice." },
+            { "id": "m57", "name": "Mix Burger", "price": 22000, "desc": "Double patty combination with special house sauce and cheese." },
+            { "id": "m32", "name": "Veggie Burger", "price": 10000, "desc": "Crispy vegetable patty with fresh garden greens." }
+        ]
+    },
+    {
+        "category": "CHINESE",
+        "items": [
+            { "id": "m107", "name": "Beef chili", "price": 15000, "desc": "" },
+            { "id": "m105", "name": "Chicken chill", "price": 15000, "desc": "" },
+            { "id": "m103", "name": "Chicken fried rice", "price": 12000, "desc": "" },
+            { "id": "m110", "name": "Chicken garlic", "price": 15000, "desc": "" },
+            { "id": "m109", "name": "Chicken manchurian", "price": 15000, "desc": "" },
+            { "id": "m108", "name": "Chicken shezwan", "price": 15000, "desc": "" },
+            { "id": "m111", "name": "Chinese wings", "price": 15000, "desc": "" },
+            { "id": "m106", "name": "Combination rice", "price": 15000, "desc": "" },
+            { "id": "m33", "name": "Egg rice", "price": 10000, "desc": "" },
+            { "id": "m113", "name": "Makange", "price": 15000, "desc": "" },
+            { "id": "m101", "name": "Noodles chicken", "price": 12000, "desc": "" },
+            { "id": "m71", "name": "Pousin chicken", "price": 18000, "desc": "" },
+            { "id": "m112", "name": "Pousin chicken beef", "price": 20000, "desc": "" },
+            { "id": "m34", "name": "Shwezwan rice", "price": 12000, "desc": "" },
+            { "id": "m102", "name": "Vegetable noodles", "price": 12000, "desc": "" },
+            { "id": "m104", "name": "Vegetable rice", "price": 10000, "desc": "" }
+        ]
+    },
+    {
+        "category": "COOLS",
+        "items": [
+            { "id": "m139", "name": "Apple mint", "price": 10000, "desc": "" },
+            { "id": "m140", "name": "Citric orange", "price": 10000, "desc": "" },
+            { "id": "m138", "name": "Mint lemon", "price": 10000, "desc": "" },
+            { "id": "m141", "name": "Passion cool", "price": 10000, "desc": "" },
+            { "id": "m143", "name": "Soda", "price": 2000, "desc": "" },
+            { "id": "m142", "name": "Strawberry cool", "price": 10000, "desc": "" },
+            { "id": "m144", "name": "Water", "price": 2000, "desc": "" }
+        ]
+    },
+    {
+        "category": "FRESH JUICE",
+        "items": [
+            { "id": "m31", "name": "Avocado plain", "price": 10000, "desc": "" },
+            { "id": "m67", "name": "Carrot juice", "price": 5000, "desc": "" },
+            { "id": "m202", "name": "Mango", "price": 5000, "desc": "" },
+            { "id": "m69", "name": "Mixed juice", "price": 6000, "desc": "" },
+            { "id": "m201", "name": "Orange", "price": 5000, "desc": "" },
+            { "id": "m200", "name": "Passion", "price": 5000, "desc": "" },
+            { "id": "m203", "name": "Pineapple", "price": 5000, "desc": "" },
+            { "id": "m199", "name": "Rosera juice", "price": 5000, "desc": "" },
+            { "id": "m30", "name": "Stafeli juice", "price": 7000, "desc": "" },
+            { "id": "m66", "name": "Tende juice", "price": 15000, "desc": "" },
+            { "id": "m56", "name": "Waterlemon", "price": 5000, "desc": "" }
+        ]
+    },
+    {
+        "category": "INDIAN DISHES",
+        "items": [
+            { "id": "m79", "name": "Beef curry", "price": 20000, "desc": "" },
+            { "id": "m84", "name": "Beef karachi", "price": 20000, "desc": "" },
+            { "id": "m88", "name": "Beef roast", "price": 20000, "desc": "" },
+            { "id": "m70", "name": "Butter chicken", "price": 20000, "desc": "" },
+            { "id": "m78", "name": "Chicken curry", "price": 20000, "desc": "" },
+            { "id": "m82", "name": "Chicken kadai", "price": 20000, "desc": "" },
+            { "id": "m83", "name": "Chicken karahi", "price": 20000, "desc": "" },
+            { "id": "m81", "name": "Chicken korapul", "price": 20000, "desc": "" },
+            { "id": "m89", "name": "Chicken koroma", "price": 20000, "desc": "" },
+            { "id": "m87", "name": "Chicken roast", "price": 20000, "desc": "" },
+            { "id": "m86", "name": "Chicken tika masala", "price": 20000, "desc": "" },
+            { "id": "m90", "name": "Dal fyr", "price": 15000, "desc": "" },
+            { "id": "m80", "name": "Matton curry", "price": 20000, "desc": "" },
+            { "id": "m85", "name": "Matton karahi", "price": 20000, "desc": "" }
+        ]
+    },
+    {
+        "category": "MILK SHAKE",
+        "items": [
+            { "id": "m206", "name": "Avocado shake", "price": 12000, "desc": "" },
+            { "id": "m207", "name": "Banana shake", "price": 12000, "desc": "" },
+            { "id": "m205", "name": "Chocolate shake", "price": 12000, "desc": "" },
+            { "id": "m13", "name": "Mixed nuts shake", "price": 15000, "desc": "" },
+            { "id": "m208", "name": "Strawberry shake", "price": 12000, "desc": "" },
+            { "id": "m12", "name": "Tende shake", "price": 15000, "desc": "" },
+            { "id": "m204", "name": "Vanilla", "price": 12000, "desc": "" }
+        ]
+    },
+    {
+        "category": "OMELETS",
+        "items": [
+            { "id": "m183", "name": "Rolled omelet", "price": 5000, "desc": "" },
+            { "id": "m181", "name": "Scramble", "price": 5000, "desc": "" },
+            { "id": "m182", "name": "Spanish", "price": 5000, "desc": "" },
+            { "id": "m184", "name": "Sun side up", "price": 5000, "desc": "" }
+        ]
+    },
+    {
+        "category": "OTHER",
+        "items": [
+            { "id": "m124", "name": "Chicken 65", "price": 17000, "desc": "" },
+            { "id": "m28", "name": "Chicken choma broiler nusu", "price": 12000, "desc": "" },
+            { "id": "m118", "name": "Chicken escalope", "price": 25000, "desc": "" },
+            { "id": "m122", "name": "Chicken gajjar", "price": 14000, "desc": "" },
+            { "id": "m116", "name": "Crunchy chicken", "price": 20000, "desc": "" },
+            { "id": "m119", "name": "Fish escalope", "price": 25000, "desc": "" },
+            { "id": "m123", "name": "Fish sweet & sour", "price": 20000, "desc": "" },
+            { "id": "m25", "name": "Fried chicken broiler nusu", "price": 12000, "desc": "" },
+            { "id": "m125", "name": "Hokong chicken", "price": 17000, "desc": "" },
+            { "id": "m115", "name": "K f c chicken", "price": 20000, "desc": "" },
+            { "id": "m126", "name": "Kong pao", "price": 17000, "desc": "" },
+            { "id": "m121", "name": "Lemon chicken", "price": 12000, "desc": "" },
+            { "id": "m127", "name": "Local chicken soup i/2", "price": 25000, "desc": "" },
+            { "id": "m120", "name": "Nyama choma", "price": 20000, "desc": "" },
+            { "id": "m29", "name": "Sekela nusu", "price": 12000, "desc": "" },
+            { "id": "m114", "name": "Wing fry", "price": 15000, "desc": "" },
+            { "id": "m117", "name": "Wings BBQ sauce", "price": 15000, "desc": "" }
+        ]
+    },
+    {
+        "category": "OUR FOOD SAVED WITH",
+        "items": [
+            { "id": "m174", "name": "Cheese chips", "price": 6000, "desc": "" },
+            { "id": "m177", "name": "Chips plain", "price": 4000, "desc": "" },
+            { "id": "m175", "name": "Chips yai", "price": 7000, "desc": "" },
+            { "id": "m38", "name": "Chipsi masala", "price": 5000, "desc": "" },
+            { "id": "m41", "name": "Garlic chips", "price": 5000, "desc": "" },
+            { "id": "m39", "name": "Mash potato", "price": 5000, "desc": "" },
+            { "id": "m176", "name": "Ndizi (kuchoma & kukaanga)", "price": 1000, "desc": "" },
+            { "id": "m5", "name": "Noodles", "price": 4000, "desc": "" },
+            { "id": "m40", "name": "Shezwan chips", "price": 5000, "desc": "" },
+            { "id": "m171", "name": "Ugari dona", "price": 4000, "desc": "" },
+            { "id": "m173", "name": "Ugari mtama", "price": 4000, "desc": "" },
+            { "id": "m170", "name": "Ugari muhogo", "price": 4000, "desc": "" },
+            { "id": "m172", "name": "Ugari sembe", "price": 4000, "desc": "" }
+        ]
+    },
+    {
+        "category": "OUR SPECIAL",
+        "items": [
+            { "id": "m187", "name": "Kisinia kuanzia", "price": 70000, "desc": "" },
+            { "id": "m185", "name": "Kisufuri (beef, chicken) watu nne", "price": 50000, "desc": "" },
+            { "id": "m186", "name": "Kisufuria watu wawili", "price": 25000, "desc": "" }
+        ]
+    },
+    {
+        "category": "PASTA",
+        "items": [
+            { "id": "m97", "name": "Alfredo pasta", "price": 15000, "desc": "" },
+            { "id": "m98", "name": "Arrabiata pasta", "price": 15000, "desc": "" },
+            { "id": "m100", "name": "Bang bang pasta", "price": 15000, "desc": "" },
+            { "id": "m99", "name": "Bolonaise pasta", "price": 15000, "desc": "" },
+            { "id": "m96", "name": "Pesto pasta", "price": 15000, "desc": "" }
+        ]
+    },
+    {
+        "category": "PIZZA",
+        "items": [
+            { "id": "m158", "name": "Bdq pizza", "price": 18000, "desc": "" },
+            { "id": "m51", "name": "Beef pizza", "price": 18000, "desc": "" },
+            { "id": "m50", "name": "Chicken pizza", "price": 18000, "desc": "" },
+            { "id": "m160", "name": "Choolate pizza", "price": 18000, "desc": "" },
+            { "id": "m35", "name": "Extra topping", "price": 3000, "desc": "" },
+            { "id": "m36", "name": "Hayawan pizza", "price": 18000, "desc": "" },
+            { "id": "m157", "name": "Magarita", "price": 15000, "desc": "" },
+            { "id": "m162", "name": "Mixed pizza", "price": 25000, "desc": "" },
+            { "id": "m161", "name": "Salam pizza", "price": 20000, "desc": "" },
+            { "id": "m159", "name": "Sausage pizza", "price": 18000, "desc": "" },
+            { "id": "m37", "name": "Sea food pizza", "price": 25000, "desc": "" },
+            { "id": "m49", "name": "Vegetable pizza", "price": 18000, "desc": "" }
+        ]
+    },
+    {
+        "category": "RICE",
+        "items": [
+            { "id": "m235", "name": "Birian (Beef)", "price": 20000, "desc": "" },
+            { "id": "m236", "name": "Birian (Chicken broiler)", "price": 22000, "desc": "" },
+            { "id": "m237", "name": "Birian (Fish)", "price": 35000, "desc": "" },
+            { "id": "m238", "name": "Birian (Local chicken)", "price": 35000, "desc": "" },
+            { "id": "m239", "name": "Birian (Mutton)", "price": 20000, "desc": "" },
+            { "id": "m234", "name": "Birian (Plain)", "price": 10000, "desc": "" },
+            { "id": "m148", "name": "Jeera rice", "price": 7000, "desc": "" },
+            { "id": "m147", "name": "Korapul rice", "price": 7000, "desc": "" },
+            { "id": "m8", "name": "Local rice (wali nazi)", "price": 7000, "desc": "" },
+            { "id": "m145", "name": "Plain rice", "price": 5000, "desc": "" },
+            { "id": "m146", "name": "Vegetable rice", "price": 10000, "desc": "" }
+        ]
+    },
+    {
+        "category": "SALAD",
+        "items": [
+            { "id": "m91", "name": "Caesar salad", "price": 10000, "desc": "" },
+            { "id": "m92", "name": "Chicken salad", "price": 12000, "desc": "" },
+            { "id": "m94", "name": "Cobb salad", "price": 15000, "desc": "" },
+            { "id": "m95", "name": "Fruit salad", "price": 12000, "desc": "" },
+            { "id": "m93", "name": "Greek salad", "price": 10000, "desc": "" },
+            { "id": "m42", "name": "Salad pasta", "price": 12000, "desc": "" }
+        ]
+    },
+    {
+        "category": "SANDWICH",
+        "items": [
+            { "id": "m52", "name": "Beef sandwich", "price": 10000, "desc": "" },
+            { "id": "m54", "name": "Chicken sandwich", "price": 10000, "desc": "" },
+            { "id": "m167", "name": "Chicken tica masala sandwich", "price": 10000, "desc": "" },
+            { "id": "m169", "name": "Makange", "price": 15000, "desc": "" },
+            { "id": "m168", "name": "Pousin chicken", "price": 18000, "desc": "" },
+            { "id": "m53", "name": "Poutin chicken beef", "price": 20000, "desc": "" },
+            { "id": "m55", "name": "Vegetable sandwich", "price": 8000, "desc": "" }
+        ]
+    },
+    {
+        "category": "SEA FOOD",
+        "items": [
+            { "id": "m151", "name": "Changu", "price": 17000, "desc": "" },
+            { "id": "m153", "name": "Fish fillet", "price": 25000, "desc": "" },
+            { "id": "m154", "name": "Fish finger", "price": 20000, "desc": "" },
+            { "id": "m155", "name": "Golden prawns", "price": 25000, "desc": "" },
+            { "id": "m152", "name": "King fish", "price": 20000, "desc": "" },
+            { "id": "m149", "name": "Ngisi", "price": 25000, "desc": "" },
+            { "id": "m15", "name": "Prawns", "price": 25000, "desc": "" },
+            { "id": "m150", "name": "Pweza", "price": 25000, "desc": "" },
+            { "id": "m3", "name": "Samaki sato kukaanga (Sato mzima)", "price": 50000, "desc": "" },
+            { "id": "m4", "name": "Samaki sato kukaanga (Sato nusu)", "price": 25000, "desc": "" },
+            { "id": "m14", "name": "Sangara", "price": 25000, "desc": "" },
+            { "id": "m61", "name": "Sato makange (Makange mzima)", "price": 50000, "desc": "" },
+            { "id": "m62", "name": "Sato makange (Sato makange nusu)", "price": 25000, "desc": "" },
+            { "id": "m63", "name": "Sato wa kuchoma (Choma mzima)", "price": 50000, "desc": "" },
+            { "id": "m64", "name": "Sato wa kuchoma (Sato choma nusu)", "price": 25000, "desc": "" },
+            { "id": "m156", "name": "Sea food plate", "price": 150000, "desc": "" }
+        ]
+    },
+    {
+        "category": "SIZZLE",
+        "items": [
+            { "id": "m198", "name": "Beef sizzle", "price": 22000, "desc": "" },
+            { "id": "m197", "name": "Chicken sizzle", "price": 22000, "desc": "" },
+            { "id": "m196", "name": "Fish sizzle", "price": 25000, "desc": "" },
+            { "id": "m68", "name": "Prawns sizzle", "price": 25000, "desc": "" }
+        ]
+    },
+    {
+        "category": "SMOOTH JUICE",
+        "items": [
+            { "id": "m137", "name": "Avacado", "price": 10000, "desc": "" },
+            { "id": "m136", "name": "Banana", "price": 10000, "desc": "" },
+            { "id": "m133", "name": "Mango", "price": 10000, "desc": "" },
+            { "id": "m135", "name": "Red velvet", "price": 10000, "desc": "" },
+            { "id": "m134", "name": "Strawberry", "price": 10000, "desc": "" }
+        ]
+    },
+    {
+        "category": "SOUPS",
+        "items": [
+            { "id": "m129", "name": "Chicken corn soup", "price": 10000, "desc": "" },
+            { "id": "m128", "name": "Hot & sour", "price": 10000, "desc": "" },
+            { "id": "m130", "name": "Kmanchor soup", "price": 10000, "desc": "" },
+            { "id": "m132", "name": "Noodles soup", "price": 10000, "desc": "" },
+            { "id": "m131", "name": "Sweet & sour", "price": 10000, "desc": "" }
+        ]
+    },
+    {
+        "category": "STATERS",
+        "items": [
+            { "id": "m73", "name": "Chicken tika boti", "price": 10000, "desc": "" },
+            { "id": "m77", "name": "Chiken finger", "price": 15000, "desc": "" },
+            { "id": "m74", "name": "Chiness bell", "price": 12000, "desc": "" },
+            { "id": "m76", "name": "Crispy corn shezwan", "price": 15000, "desc": "" },
+            { "id": "m72", "name": "Malai boti", "price": 10000, "desc": "" },
+            { "id": "m24", "name": "Mishikaki ( botton 4)", "price": 10000, "desc": "" },
+            { "id": "m75", "name": "Nundu fry", "price": 15000, "desc": "" }
+        ]
+    },
+    {
+        "category": "STEAK",
+        "items": [
+            { "id": "m193", "name": "Beef/chicken american steak", "price": 22000, "desc": "" },
+            { "id": "m190", "name": "Beef/chicken garlic steak", "price": 22000, "desc": "" },
+            { "id": "m191", "name": "Beef/chicken hot & garlic", "price": 22000, "desc": "" },
+            { "id": "m189", "name": "Beef/chicken pepper steak", "price": 22000, "desc": "" },
+            { "id": "m192", "name": "Beef/chicken simba steak", "price": 22000, "desc": "" },
+            { "id": "m194", "name": "Beef/chicken tarryak", "price": 22000, "desc": "" },
+            { "id": "m1", "name": "KFC package", "price": 25000, "desc": "" },
+            { "id": "m26", "name": "Kuku kienyeji wa kuchoma (Choma mzima)", "price": 50000, "desc": "" },
+            { "id": "m27", "name": "Kuku kienyeji wa kuchoma (Kuku choma nusu)", "price": 25000, "desc": "" },
+            { "id": "m195", "name": "Lemon steak", "price": 22000, "desc": "" },
+            { "id": "m188", "name": "Mushroom steak", "price": 22000, "desc": "" },
+            { "id": "m59", "name": "Nyama ya mbuzi (Mbuzi choma)", "price": 30000, "desc": "" },
+            { "id": "m60", "name": "Nyama ya mbuzi (Mbuzi roast)", "price": 25000, "desc": "" }
+        ]
+    },
+    {
+        "category": "SWAHILI",
+        "items": [
+            { "id": "m178", "name": "Maharage nazi", "price": 4000, "desc": "" },
+            { "id": "m9", "name": "Maini rosti", "price": 15000, "desc": "" },
+            { "id": "m58", "name": "Maini ya kukaanga", "price": 20000, "desc": "" },
+            { "id": "m179", "name": "Mboga za majani", "price": 4000, "desc": "" },
+            { "id": "m7", "name": "Mchuzi wa nazi", "price": 4000, "desc": "" },
+            { "id": "m180", "name": "Ndizi nyama", "price": 12000, "desc": "" },
+            { "id": "m11", "name": "Nyama rosti", "price": 15000, "desc": "" },
+            { "id": "m44", "name": "Pilau (Beef)", "price": 30000, "desc": "" },
+            { "id": "m45", "name": "Pilau (Chicken broiler)", "price": 22000, "desc": "" },
+            { "id": "m46", "name": "Pilau (Local chicken)", "price": 35000, "desc": "" },
+            { "id": "m47", "name": "Pilau (Mutton mbuzi)", "price": 35000, "desc": "" },
+            { "id": "m43", "name": "Pilau (Plain)", "price": 10000, "desc": "" },
+            { "id": "m48", "name": "Pilau (Samaki)", "price": 35000, "desc": "" }
+        ]
+    },
+    {
+        "category": "WRAP",
+        "items": [
+            { "id": "m164", "name": "Beef wrap", "price": 12000, "desc": "" },
+            { "id": "m165", "name": "Chicken tika wrap", "price": 12000, "desc": "" },
+            { "id": "m163", "name": "Chicken wrap", "price": 12000, "desc": "" },
+            { "id": "m166", "name": "Fish wrap", "price": 15000, "desc": "" }
+        ]
+    }
+];
+
+        let activeCategory = "ALL";
+        let searchQuery = "";
+        let cart = [];
+
+        function formatTZS(amount) {
+            return 'TZS ' + amount.toLocaleString('en-US');
+        }
+
+        function positionSidebar() {
+            const h = document.querySelector('header');
+            const nav = document.getElementById('categoryChips');
+            if (!h || !nav) return;
+            const t = Math.round(h.getBoundingClientRect().height) + 12;
+            nav.style.top = t + 'px';
+            nav.style.maxHeight = 'calc(100vh - ' + (t + 20) + 'px)';
+        }
+        window.addEventListener('resize', positionSidebar);
+        window.addEventListener('load', positionSidebar);
+
+        function renderCategoryChips() {
+            const container = document.getElementById('categoryChips');
+            container.innerHTML = categoriesList.map(cat => {
+                const isActive = activeCategory === cat;
+                return `
+                    <button onclick="setCategory('${cat}')" 
+                        class="w-full text-left px-3 py-2 rounded-xl text-[11px] sm:text-xs font-bold leading-tight transition-all border ${
+                            isActive 
+                            ? 'bg-burgundy text-gold-500 border-gold-500 shadow-md shadow-burgundy/50' 
+                            : 'bg-charcoal text-gray-300 border-borderdark hover:border-gold-500/50 hover:text-white'
+                        }">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+            positionSidebar();
+        }
+
+        // Render Menu Grid with Header Banner Images per Category matching reference image
+        function renderMenu() {
+            const container = document.getElementById('menuContainer');
+            const noResults = document.getElementById('noResults');
+            container.innerHTML = "";
+
+            let totalVisibleItems = 0;
+
+            menuData.forEach(catGroup => {
+                if (activeCategory !== "ALL" && activeCategory !== catGroup.category) {
+                    return;
+                }
+
+                const filteredItems = catGroup.items.filter(item => {
+                    const q = searchQuery.toLowerCase();
+                    return item.name.toLowerCase().includes(q) || 
+                           (item.desc || '').toLowerCase().includes(q) ||
+                           catGroup.category.toLowerCase().includes(q);
+                });
+
+                if (filteredItems.length === 0) return;
+                totalVisibleItems += filteredItems.length;
+
+                const headerImageUrl = categoryHeaderImages[catGroup.category] || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80";
+
+                const section = document.createElement('div');
+                section.className = "bg-charcoal rounded-2xl border border-borderdark overflow-hidden shadow-2xl";
+
+                section.innerHTML = `
+                    <!-- Category Header Banner matching reference image -->
+                    <div class="relative h-48 sm:h-56 w-full overflow-hidden">
+                        <img src="${headerImageUrl}" alt="${catGroup.category}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 flex items-end justify-between">
+                            <div>
+                                <span class="inline-block px-2.5 py-0.5 bg-burgundy text-gold-400 border border-gold-500/30 text-[10px] font-bold rounded uppercase tracking-wider mb-1">
+                                    CATEGORY
+                                </span>
+                                <h2 class="text-2xl sm:text-3xl font-serif font-bold text-white tracking-wide uppercase">${catGroup.category}</h2>
+                            </div>
+                            <span class="text-xs text-gray-300 font-mono">${filteredItems.length} items</span>
+                        </div>
+                    </div>
+
+                    <!-- Food Items Grid matching reference layout -->
+                    <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        ${filteredItems.map(item => {
+                            const cartItem = cart.find(i => i.id === item.id);
+                            const itemQty = cartItem ? cartItem.qty : 0;
+                            return `
+                                <div class="bg-darkslate/70 p-4 rounded-xl border border-borderdark hover:border-gold-500/40 transition-all flex flex-col justify-between group">
+                                    <div>
+                                        <div class="flex items-start justify-between gap-3">
+                                            <h3 class="text-base font-semibold text-white group-hover:text-gold-400 transition-colors">
+                                                ${item.name}
+                                            </h3>
+                                            <span class="text-xs sm:text-sm font-bold font-mono text-gold-500 whitespace-nowrap bg-charcoal px-3 py-1 rounded-lg border border-borderdark">
+                                                ${formatTZS(item.price)}
+                                            </span>
+                                        </div>
+                                        ${item.desc ? `<p class="text-xs text-gray-400 mt-2 leading-relaxed">${item.desc}</p>` : ''}
+                                    </div>
+
+                                    <!-- Action Button / Quantity Selector matching reference style -->
+                                    <div class="mt-4 pt-3 border-t border-borderdark/50 flex items-center justify-between">
+                                        <span class="text-[11px] text-gray-500 font-mono">ID: ${item.id}</span>
+                                        
+                                        ${itemQty > 0 ? `
+                                            <div class="flex items-center gap-2 bg-charcoal border border-gold-500/50 rounded-xl p-1">
+                                                <button onclick="updateQty('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-burgundy text-white hover:bg-red-700 flex items-center justify-center font-bold text-xs">
+                                                    <i class="fa-solid fa-minus"></i>
+                                                </button>
+                                                <span class="w-6 text-center text-xs font-bold text-white font-mono">${itemQty}</span>
+                                                <button onclick="updateQty('${item.id}', 1)" class="w-7 h-7 rounded-lg bg-gold-500 text-darkslate hover:bg-gold-400 flex items-center justify-center font-bold text-xs">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        ` : `
+                                            <button onclick="addToCart('${item.id}', '${escapeQuotes(item.name)}', ${item.price})" 
+                                                class="px-4 py-2 bg-burgundy hover:bg-red-800 text-gold-400 border border-gold-500/40 font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md">
+                                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                                <span>Add to Order</span>
+                                            </button>
+                                        `}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+
+                container.appendChild(section);
+            });
+
+            if (totalVisibleItems === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'");
+        }
+
+        function setCategory(category) {
+            activeCategory = category;
+            renderCategoryChips();
+            renderMenu();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderMenu();
+        });
+
+        function resetSearch() {
+            searchQuery = "";
+            activeCategory = "ALL";
+            document.getElementById('searchInput').value = "";
+            renderCategoryChips();
+            renderMenu();
+        }
+
+        // Cart State & Interactions
+        function addToCart(id, name, price) {
+            const existing = cart.find(i => i.id === id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ id, name, price, qty: 1 });
+            }
+            updateCartUI();
+            renderMenu();
+        }
+
+        function updateQty(id, delta) {
+            const index = cart.findIndex(i => i.id === id);
+            if (index !== -1) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+            renderMenu();
+        }
+
+        function updateCartUI() {
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            document.getElementById('cartBadgeMobile').innerText = totalCount;
+            document.getElementById('cartBadgeHeader').innerText = totalCount;
+            document.getElementById('floatingCartCount').innerText = totalCount;
+            document.getElementById('floatingCartTotal').innerText = formatTZS(totalPrice);
+            
+            document.getElementById('cartSubtotal').innerText = formatTZS(totalPrice);
+            document.getElementById('cartTotal').innerText = formatTZS(totalPrice);
+
+            const floatingBar = document.getElementById('floatingCartBar');
+            if (totalCount > 0) {
+                floatingBar.classList.remove('translate-y-28', 'opacity-0');
+                floatingBar.classList.add('translate-y-0', 'opacity-100');
+                refreshSendState();
+            } else {
+                floatingBar.classList.add('translate-y-28', 'opacity-0');
+                floatingBar.classList.remove('translate-y-0', 'opacity-100');
+                refreshSendState();
+            }
+
+            renderCartDrawerItems();
+        }
+
+        function renderCartDrawerItems() {
+            const container = document.getElementById('cartItemsContainer');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div id="emptyCartState" class="text-center py-16 space-y-3">
+                        <i class="fa-solid fa-basket-shopping text-5xl text-gray-600"></i>
+                        <p class="text-base text-gray-400">Your order tray is currently empty.</p>
+                        <p class="text-xs text-gray-500">Tap the (+ Add to Order) button on any dish to select items.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="bg-darkslate p-3.5 rounded-xl border border-borderdark flex items-center justify-between gap-3">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-semibold text-white truncate">${item.name}</h4>
+                        <p class="text-xs text-gold-500 font-mono mt-0.5">${formatTZS(item.price)} x ${item.qty} = ${formatTZS(item.price * item.qty)}</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 bg-charcoal border border-borderdark rounded-lg p-1">
+                        <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded bg-burgundy text-white hover:bg-red-700 flex items-center justify-center font-bold text-xs">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <span class="w-5 text-center text-xs font-bold text-white font-mono">${item.qty}</span>
+                        <button onclick="updateQty('${item.id}', 1)" class="w-6 h-6 rounded bg-gold-500 text-darkslate hover:bg-gold-400 flex items-center justify-center font-bold text-xs">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openCartDrawer() {
+            document.getElementById('cartDrawer').classList.remove('translate-x-full');
+            document.getElementById('cartBackdrop').classList.remove('hidden');
+        }
+
+        function closeCartDrawer() {
+            document.getElementById('cartDrawer').classList.add('translate-x-full');
+            document.getElementById('cartBackdrop').classList.add('hidden');
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                openCartDrawer();
+            } else {
+                closeCartDrawer();
+            }
+        }
+
+        const MM_NUMBER = '0682002546';
+
+        function isMobileMoney() {
+            return (document.querySelector('input[name="payMethod"]:checked') || {}).value === 'Mobile money';
+        }
+        function mobileMoneyComplete() {
+            return document.getElementById('mmNetwork').value !== '' &&
+                   document.getElementById('mmSender').value.trim() !== '' &&
+                   document.getElementById('mmPaid').checked;
+        }
+        function refreshSendState() {
+            const hasItems = cart.length > 0;
+            const ok = !isMobileMoney() || mobileMoneyComplete();
+            document.getElementById('whatsappBtn').disabled = !(hasItems && ok);
+            document.getElementById('mmHint').classList.toggle('hidden', !(isMobileMoney() && hasItems && !ok));
+        }
+        function toggleWalletBox() {
+            document.getElementById('walletBox').classList.toggle('hidden', !isMobileMoney());
+            refreshSendState();
+        }
+        document.querySelectorAll('input[name="payMethod"]').forEach(r => r.addEventListener('change', toggleWalletBox));
+        ['mmNetwork', 'mmSender', 'mmPaid'].forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('input', refreshSendState);
+            el.addEventListener('change', refreshSendState);
+        });
+
+        function sendOrderViaWhatsApp() {
+            if (cart.length === 0) return;
+
+            if (isMobileMoney() && !mobileMoneyComplete()) {
+                refreshSendState();
+                alert('Please choose your network, enter the sender name and tick the payment box.');
+                return;
+            }
+
+            const notes = document.getElementById('orderNotes').value.trim();
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            let message = `*NEW ORDER - SHINE BUFFET & GRILLS*\n`;
+            message += `-----------------------------------\n`;
+            
+            cart.forEach((item, index) => {
+                message += `${index + 1}. *${item.name}*\n`;
+                message += `   ${item.qty} x ${formatTZS(item.price)} = ${formatTZS(item.price * item.qty)}\n`;
+            });
+
+            message += `-----------------------------------\n`;
+            message += `*TOTAL AMOUNT:* ${formatTZS(totalPrice)}\n`;
+            const orderType = (document.querySelector('input[name="orderType"]:checked') || {}).value || 'Pick up';
+            const payMethod = (document.querySelector('input[name="payMethod"]:checked') || {}).value || 'Cash';
+            message += `*ORDER TYPE:* ${orderType}\n`;
+            message += `*PAYMENT:* ${payMethod}${payMethod === 'Mobile money' ? ' (paid in advance)' : (orderType === 'Delivery' ? ' (on delivery)' : ' (at pick up)')}\n`;
+            if (payMethod === 'Mobile money') {
+                message += `*PAID TO:* ${MM_NUMBER}\n`;
+                message += `*NETWORK:* ${document.getElementById('mmNetwork').value}\n`;
+                message += `*SENDER NAME:* ${document.getElementById('mmSender').value.trim()}\n`;
+                message += `*PAYMENT STATUS:* PENDING CONFIRMATION - process order only after payment is verified\n`;
+            }
+            if (notes) {
+                message += `*${orderType === 'Delivery' ? 'DELIVERY ADDRESS / NOTES' : 'NOTES'}:* ${notes}\n`;
+            }
+            message += `-----------------------------------\n`;
+            message += `_Sent via Shine Buffet & Grills Web Menu_`;
+
+            const encodedText = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedText}`;
+
+            showOrderModal(message, whatsappUrl);
+        }
+
+        function showOrderModal(message, url) {
+            document.getElementById('orderMsgBox').value = message.replace(/\*/g, '').replace(/_/g, '');
+            document.getElementById('orderMsgBox').dataset.raw = message;
+            document.getElementById('openWaLink').href = url;
+            document.getElementById('copyStatus').textContent = '';
+            document.getElementById('orderModal').classList.remove('hidden');
+        }
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.add('hidden');
+        }
+        function copyOrderMessage() {
+            const box = document.getElementById('orderMsgBox');
+            const raw = box.dataset.raw || box.value;
+            const done = () => { document.getElementById('copyStatus').textContent = 'Order copied. Paste it in WhatsApp chat with 0675921219.'; };
+            const fallback = () => {
+                const t = document.createElement('textarea');
+                t.value = raw; t.style.position = 'fixed'; t.style.opacity = '0';
+                document.body.appendChild(t); t.select();
+                try { document.execCommand('copy'); done(); } catch (e) { document.getElementById('copyStatus').textContent = 'Copy failed. Select the text above and copy it manually.'; }
+                document.body.removeChild(t);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(raw).then(done, fallback);
+            } else { fallback(); }
+        }
+
+        function applyTheme(t) {
+            if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            else document.documentElement.removeAttribute('data-theme');
+            const light = t === 'light';
+            document.getElementById('themeIcon').className = 'fa-solid ' + (light ? 'fa-moon' : 'fa-sun');
+            document.getElementById('themeLabel').textContent = light ? 'Dark' : 'Light';
+            try { localStorage.setItem('shineTheme', t); } catch (e) {}
+        }
+        function toggleTheme() {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+        }
+
+        window.onload = function() {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+            renderCategoryChips();
+            renderMenu();
+        };
+    </script>
+
+    <!-- Order ready modal -->
+    <div id="orderModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70">
+        <div class="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-charcoal border border-gold-500/40 p-5 space-y-3">
+            <h3 class="font-serif text-xl font-bold text-white">Your order is ready</h3>
+            <p class="text-xs text-gray-300">Tap <b>Open WhatsApp</b> to send it to us. If WhatsApp does not open, tap <b>Copy order</b> and paste it in a WhatsApp chat with <a class="text-gold-500 underline" href="tel:0675921219">0675921219</a>.</p>
+            <textarea id="orderMsgBox" readonly rows="9" class="w-full px-3 py-2 bg-darkslate border border-borderdark rounded-xl text-xs text-gray-200 font-mono"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <a id="openWaLink" href="#" target="_blank" rel="noopener noreferrer" class="text-center py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl">Open WhatsApp</a>
+                <button type="button" onclick="copyOrderMessage()" class="py-2.5 bg-burgundy hover:bg-red-800 text-gold-400 border border-gold-500/40 font-bold text-sm rounded-xl">Copy order</button>
+            </div>
+            <p id="copyStatus" class="text-[11px] text-gold-500 min-h-[1rem]"></p>
+            <button type="button" onclick="closeOrderModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">Close</button>
+        </div>
+    </div>
+</body>
+</html>
